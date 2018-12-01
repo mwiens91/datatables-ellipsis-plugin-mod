@@ -60,6 +60,22 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
       .replace( /"/g, '&quot;' );
   };
 
+  var shorten_text = function( text ) {
+      var shortened = text.substr(0, cutoff - 1);
+
+      // Find the last white space character in the string
+      if ( wordbreak ) {
+        shortened = shortened.replace(/\s([^\s]*)$/, '');
+      }
+
+      // Protect against uncontrolled HTML input
+      if ( escapeHtml ) {
+        shortened = esc( shortened );
+      }
+
+      return shortened + '…';
+  }
+
   return function ( d, type, row ) {
     // Order, search and type get the original data
     if ( type !== 'display' ) {
@@ -76,23 +92,22 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
       return d;
     }
 
+    // This will return undefined if the text in d isn't a string
     var shortened_text = $( d ).text(function( index, text ) {
-      var shortened = text.substr(0, cutoff - 1);
-
-      // Find the last white space character in the string
-      if ( wordbreak ) {
-        shortened = shortened.replace(/\s([^\s]*)$/, '');
-      }
-
-      // Protect against uncontrolled HTML input
-      if ( escapeHtml ) {
-        shortened = esc( shortened );
-      }
-
-      return shortened + '…';
+      return shorten_text( text );
     })[0];
 
-    return '<span class="ellipsis" title="' + esc($( d ).text()) +'">' + shortened_text.outerHTML + '</span>';
+    // Test against undefined here
+    if ( typeof shortened_text === 'undefined' ) {
+      shortened_text = shorten_text( d );
+      full_text = d;
+    } else {
+      // shortened_text isn't undefined: it's an element. Grab the
+      // relevant HTML.
+      shortened_text = shortened_text.outerHTML;
+      full_text = $( d ).text();
+    }
 
+    return '<span class="ellipsis" title="' + esc( full_text ) +'">' + shortened_text + '</span>';
   };
 };
