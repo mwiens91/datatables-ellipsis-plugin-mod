@@ -76,7 +76,7 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
       return d;
     }
 
-    let shortened_text = $( d ).text(function( index, text ) {
+    var shortened_text = $( d ).text(function( index, text ) {
       var shortened = text.substr(0, cutoff - 1);
 
       // Find the last white space character in the string
