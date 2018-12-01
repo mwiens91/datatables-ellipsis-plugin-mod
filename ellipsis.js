@@ -1,4 +1,8 @@
 /**
+ * Note that this is a modified version of the ellipsis plugin. See
+ * here https://github.com/mwiens91/datatables-ellipsis-plugin-mod for
+ * details. What follows is the original module description:
+ *
  * This data rendering helper method can be useful for cases where you have
  * potentially large data strings to be shown in a column that is restricted by
  * width. The data for the column is still fully searchable and sortable, but if
