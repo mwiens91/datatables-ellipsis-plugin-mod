@@ -61,6 +61,11 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
   };
 
   var shorten_text = function( text ) {
+      // Don't do anything if the text doesn't need shortening
+      if ( text.length <= cutoff ) {
+        return text;
+      }
+
       var shortened = text.substr(0, cutoff - 1);
 
       // Find the last white space character in the string
@@ -87,10 +92,6 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
     }
 
     d = d.toString(); // cast numbers
-
-    if ( d.length <= cutoff ) {
-      return d;
-    }
 
     // This will return undefined if the text in d isn't a string
     var shortened_text = $( d ).text(function( index, text ) {
