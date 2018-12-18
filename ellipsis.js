@@ -93,20 +93,27 @@ jQuery.fn.dataTable.render.ellipsis = function ( cutoff, wordbreak, escapeHtml )
 
     d = d.toString(); // cast numbers
 
-    // This will return undefined if the text in d isn't a string
-    var shortened_text = $( d ).text(function( index, text ) {
-      return shorten_text( text );
-    })[0];
+    try {
+      // This will return undefined if the text in d isn't a string and
+      // might throw an error if jQuery interprets d as an expression.
+      // If it otherwise returns a sane result, assume it's a valid HTML
+      // element.
+      var shortened_text = $( d ).text(function( index, text ) {
+        return shorten_text( text );
+      })[0];
 
-    // Test against undefined here
-    if ( typeof shortened_text === 'undefined' ) {
-      shortened_text = shorten_text( d );
-      full_text = d;
-    } else {
-      // shortened_text isn't undefined: it's an element. Grab the
-      // relevant HTML.
+      // Test against undefined here
+      if ( typeof shortened_text === 'undefined' ) {
+        throw Error
+      }
+
+      // All good so far: it's an element. Grab the relevant HTML.
       shortened_text = shortened_text.outerHTML;
       full_text = $( d ).text();
+    } catch(error) {
+      // Not interpretable as an HTML element. Shorten text as normal.
+      shortened_text = shorten_text( d );
+      full_text = d;
     }
 
     return '<span class="ellipsis" title="' + esc( full_text ) +'">' + shortened_text + '</span>';
